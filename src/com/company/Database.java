@@ -1,8 +1,12 @@
 package com.company;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class Database {
 
-    //Connect to Database
+    //Connection String
     public static final String DB_NAME = "Twitter.db";
     public static final String CONNECTION_STRING = "jdbc:sqlite:/home/daniel/Documents/TwitterDBProject/" + DB_NAME;
 
@@ -54,5 +58,30 @@ public class Database {
     //FIELDS --> TWEET_TAGS
     public static final String COLUMN_TWEET_TAG_TWEET_ID = "tweet_id";
     public static final String COLUMN_TAG = "tag";
+
+    private Connection connection;
+
+    public boolean open() {
+        try {
+            //Connect to Database
+            connection = DriverManager.getConnection(CONNECTION_STRING);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Couldn't connect to database!");
+            return false;
+        }
+    }
+
+    public void close() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to close the database!");
+        }
+    }
+
+
 }
 

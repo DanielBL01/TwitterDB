@@ -16,7 +16,7 @@ Tools and Resources:
 
     - sqlite3 and sqlitebrowser
 
-    - package --> sqlite-jdbc-3.30.1.jar
+    - Driver --> sqlite-jdbc-3.30.1.jar
 
     - IDE/Vim
 
