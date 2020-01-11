@@ -19,6 +19,9 @@ public class Main {
         //***example of new tweet insertion***
         database.addNewTweet(1, "Hello World", 2020, 1, "Dan the man",
                 "Daniel Lee", "tweet.jpg");
+
+        //***example of new tweet mention***
+        database.addMNewMention(1, 1, 2);
         database.close();
     }
 }

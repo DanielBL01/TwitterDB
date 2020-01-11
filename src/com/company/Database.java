@@ -192,4 +192,24 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    //***IMPORTANT NOTE*** In table mentions there are two fields - target and source
+    //target and source must inner join with the field user_id from both the table tweets and table users
+    //from this, the database will show who tweeted the mention as well as who received the mention
+    //but first allow main to add a mention...
+
+    public void addMNewMention(int tweet_id, int source, int target) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("INSERT INTO " + TABLE_TWEET_MENTIONS +
+                    " (" + COLUMN_TWEET_MENTION_TWEET_ID + ", " +
+                    COLUMN_SOURCE + ", " +
+                    COLUMN_TARGET + ") " +
+                    "VALUES(" + tweet_id + ", " + source + ", " + target + ")");
+
+        } catch (SQLException e) {
+            System.out.println("Failed to add new mention into database");
+            e.printStackTrace();
+        }
+    }
 }
