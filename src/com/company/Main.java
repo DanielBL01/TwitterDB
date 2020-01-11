@@ -8,7 +8,17 @@ public class Main {
             System.out.println("ERROR: Cannot open database");
             return;
         }
-        
+
+        database.insertTables();
+
+        //***example of new user insertion***
+        database.addNewUser(1, "Dan the man", "Daniel Lee", "image.jpg",
+                "Hamilton, Ontario", "insert url", "I study electronics and programming",
+                150, 100, 200);
+
+        //***example of new tweet insertion***
+        database.addNewTweet(1, "Hello World", 2020, 1, "Dan the man",
+                "Daniel Lee", "tweet.jpg");
         database.close();
     }
 }
