@@ -1,6 +1,8 @@
 package com.company;
 
 import javax.management.relation.RelationSupport;
+import javax.swing.plaf.nimbus.State;
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +110,7 @@ public class Database {
                     COLUMN_STATUSES_COUNT + " INTEGER" + ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS " + TABLE_TWEETS +
-                    " (" + COLUMN_TWEET_ID + " INTEGER PRIMARY KEY, " +
+                    " (" + COLUMN_TWEET_ID + " INTEGER, " +
                     COLUMN_TWEET_TEXT + " TEXT NOT NULL, " +
                     COLUMN_CREATED_AT + " INTEGER, " +
                     COLUMN_TWEET_USER_ID + " INTEGER, " +
@@ -117,16 +119,16 @@ public class Database {
                     COLUMN_TWEET_PROFILE_IMAGE_URL + " TEXT NOT NULL" + ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS " + TABLE_TWEET_MENTIONS +
-                    " (" + COLUMN_TWEET_MENTION_TWEET_ID + " INTEGER PRIMARY KEY, " +
+                    " (" + COLUMN_TWEET_MENTION_TWEET_ID + " INTEGER, " +
                     COLUMN_SOURCE + " INTEGER, " +
                     COLUMN_TARGET + " INTEGER" + ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS " + TABLE_TWEET_URLS +
-                    " (" + COLUMN_TWEET_URL_TWEET_ID + " INTEGER PRIMARY KEY, " +
+                    " (" + COLUMN_TWEET_URL_TWEET_ID + " INTEGER, " +
                     COLUMN_TWEET_URL + " TEXT NOT NULL" + ")");
 
             statement.execute("CREATE TABLE IF NOT EXISTS " + TABLE_TWEET_TAGS +
-                    " (" + COLUMN_TWEET_TAG_TWEET_ID + " INTEGER PRIMARY KEY, " +
+                    " (" + COLUMN_TWEET_TAG_TWEET_ID + " INTEGER, " +
                     COLUMN_TAG + " TEXT NOT NULL" + ")");
 
         } catch (SQLException e) {
@@ -181,7 +183,7 @@ public class Database {
                     COLUMN_TWEET_SCREEN_NAME + ", " +
                     COLUMN_TWEET_NAME + ", " +
                     COLUMN_TWEET_PROFILE_IMAGE_URL + ") " +
-                    "VALUES(" + user_id + ", '" + tweet_text + "', " + created_at + ", " + user_id +
+                    "VALUES(" + tweet_id + ", '" + tweet_text + "', " + created_at + ", " + user_id +
                     ", '" + screen_name + "', '" + name + "', '" + profile_image_url + "')");
 
         } catch (SQLException e) {
@@ -222,12 +224,14 @@ public class Database {
 
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM " + TABLE_USERS);
+            resultSet = statement.executeQuery("SELECT * FROM " + TABLE_USERS + " ORDER BY " +
+                    COLUMN_USER_NAME + " COLLATE NOCASE");
 
             List<Users> users = new ArrayList<>();
             while(resultSet.next()) {
                 Users user = new Users();
 
+                //resultSet.getInt || resultSet.getString takes from current record (resultSet.next())
                 user.setUser_id(resultSet.getInt(COLUMN_USER_ID));
                 user.setScreen_name(resultSet.getString(COLUMN_USER_SCREEN_NAME));
                 user.setName(resultSet.getString(COLUMN_USER_NAME));
@@ -245,6 +249,26 @@ public class Database {
 
         } catch (SQLException e) {
             System.out.println("The Query to table users has failed" + e.getMessage());
+            return null;
+        }
+    }
+    //Use a users screen name to output all of their tweets into console
+    public List<String> queryUserForTweet(String user_name) {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT " + TABLE_TWEETS + "." +
+                     COLUMN_TWEET_TEXT + " FROM " + TABLE_USERS + " INNER JOIN " + TABLE_TWEETS +
+                     " ON " + TABLE_USERS + "." + COLUMN_USER_ID + " = " + TABLE_TWEETS +
+                     "." + COLUMN_TWEET_USER_ID + " WHERE " + TABLE_USERS + "." + COLUMN_USER_SCREEN_NAME +
+                     " = \"" + user_name + "\"")) {
+            List<String> tweets = new ArrayList<>();
+            while(resultSet.next()) {
+                tweets.add(resultSet.getString(1)); //column index
+            }
+
+            return tweets;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to query data");
             return null;
         }
     }

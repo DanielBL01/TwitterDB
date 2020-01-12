@@ -1,16 +1,20 @@
 package com.company;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
         Database database = new Database();
         if (!database.open()) {
             System.out.println("ERROR: Cannot open database");
             return;
         }
 
+        //Init the tables to create database
         database.insertTables();
 
         //***example of new user insertion***
@@ -30,7 +34,17 @@ public class Main {
         database.addNewTweet(1, "Hello World", 2020, 1, "Dan the man",
                 "Daniel Lee", "tweet.jpg");
 
+        database.addNewTweet(1, "Second Tweet", 2020, 1, "Dan the man",
+                "Daniel Lee", "tweet.jpg");
+
+        database.addNewTweet(1, "Third and Last tweet", 2020, 1,
+                "Dan the man", "Daniel Lee", "tweet.jpg");
+
+        database.addNewTweet(2, "I love programming!", 2020, 2,
+                "Hyun", "Hyun Choi", "tweet.jpg");
+
         //***example of new tweet mention***
+        //source and target are joined by user_id from the users and tweets columns
         database.addMNewMention(1, 1, 2);
 
         //***example of querying the user table and outputting all the data into console***
@@ -48,6 +62,13 @@ public class Main {
                     user.getProfile_image_url() + ", " + user.getLocation() + ", " + user.getUrl() + ", " +
                     user.getDescription() + ", " + user.getFollowers_count() + ", " + user.getFriends_count() +
                     ", " + user.getStatuses_count());
+        }
+
+        //Search for anyone's tweet as long as you know their screen name
+        String screen_name = scanner.nextLine();
+        List<String> tweetsFromUser = database.queryUserForTweet(screen_name);
+        for(String text : tweetsFromUser) {
+            System.out.println(text);
         }
 
         database.close();
