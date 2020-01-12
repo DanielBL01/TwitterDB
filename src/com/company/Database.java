@@ -1,9 +1,9 @@
 package com.company;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.management.relation.RelationSupport;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
 
@@ -210,6 +210,42 @@ public class Database {
         } catch (SQLException e) {
             System.out.println("Failed to add new mention into database");
             e.printStackTrace();
+        }
+    }
+
+    public List<Users> queryUsers() {
+
+        Statement statement = null;
+
+        //ResultSet contains the results of the executed query which in this is SELECT * FROM users
+        ResultSet resultSet = null;
+
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM " + TABLE_USERS);
+
+            List<Users> users = new ArrayList<>();
+            while(resultSet.next()) {
+                Users user = new Users();
+
+                user.setUser_id(resultSet.getInt(COLUMN_USER_ID));
+                user.setScreen_name(resultSet.getString(COLUMN_USER_SCREEN_NAME));
+                user.setName(resultSet.getString(COLUMN_USER_NAME));
+                user.setProfile_image_url(resultSet.getString(COLUMN_USER_PROFILE_IMAGE_URL));
+                user.setLocation(resultSet.getString(COLUMN_LOCATION));
+                user.setUrl(resultSet.getString(COLUMN_USER_URL));
+                user.setDescription(resultSet.getString(COLUMN_DESCRIPTION));
+                user.setFollowers_count(resultSet.getInt(COLUMN_FOLLOWERS_COUNT));
+                user.setFriends_count(resultSet.getInt(COLUMN_FRIENDS_COUNT));
+                user.setStatuses_count(resultSet.getInt(COLUMN_STATUSES_COUNT));
+
+                users.add(user);
+            }
+                return users;
+
+        } catch (SQLException e) {
+            System.out.println("The Query to table users has failed" + e.getMessage());
+            return null;
         }
     }
 }
